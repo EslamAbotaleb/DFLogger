@@ -51,6 +51,12 @@ public final class DebugLogger {
 }
 
 /// Global shorthand so you can call `debugLog(...)` anywhere.
+///
+/// `@inlinable` so the body is emitted into each calling module. This avoids an
+/// external symbol reference to DFLogger, which otherwise fails to link when
+/// DFLogger is re-exported transitively (e.g. via SharedResources' @_exported
+/// import) as a static SPM library.
+@inlinable
 public func debugLog(
     _ items: Any...,
     separator: String = " ",
