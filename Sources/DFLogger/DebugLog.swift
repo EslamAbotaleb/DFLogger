@@ -52,11 +52,14 @@ public final class DebugLogger {
 
 /// Global shorthand so you can call `debugLog(...)` anywhere.
 ///
-/// `@inlinable` so the body is emitted into each calling module. This avoids an
-/// external symbol reference to DFLogger, which otherwise fails to link when
-/// DFLogger is re-exported transitively (e.g. via SharedResources' @_exported
-/// import) as a static SPM library.
-@inlinable
+/// `@_alwaysEmitIntoClient`: the body is ALWAYS emitted into the calling module
+/// (Debug and Release) and DFLogger emits no external symbol for it. This is
+/// required because plain `@inlinable` is not inlined in -Onone (Debug) builds,
+/// so callers would still reference `DFLogger.debugLog` — which fails to link
+/// when DFLogger is pulled in transitively (e.g. via SharedResources'
+/// `@_exported import`) as a static SPM library. Emitting into the client means
+/// no consumer needs to link DFLogger's symbol at all.
+@_alwaysEmitIntoClient
 public func debugLog(
     _ items: Any...,
     separator: String = " ",
